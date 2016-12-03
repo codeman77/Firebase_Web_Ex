@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<!--suppress ALL -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Firebase Database Example</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+    <style>
+        .message-bubble {
+            padding: 10px 0 10px 0;
+        }
+
+        .message-bubble:nth-child(even) {
+            background-color: #F5F5F5;
+        }
+
+        .message-bubble > * {
+            padding-left: 10px;
+        }
+
+        .panel-body {
+            padding: 0;
+        }
+
+        .panel-heading {
+            background-color: #3d6da7 !important;
+            color: black !important;
+        }
+
+        .chat-panel {
+            height: 400px;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading">Chat Example</div>
+            <div class="panel-body">
+                <div class="chat-panel container">
+                    <div class="row message-bubble">
+                        <span>Why is yo shit so broke?</span>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <div class="input-group">
+                        <input type="text" class="messageText form-control">
+                        <span class="input-group-btn"><button class="sendBtn btn btn-default" type="button">Send</button></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.1.1.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.6.2/firebase.js"></script>
+<script>
+
+    // Initialize Firebase
+    var config = {
+        apiKey: "AIzaSyB-6FekbDplMLIsmrW0Kj8fzmSl4DLMGVQ",
+        authDomain: "fir-ex-a46d9.firebaseapp.com",
+        databaseURL: "https://fir-ex-a46d9.firebaseio.com",
+        storageBucket: "fir-ex-a46d9.appspot.com",
+        messagingSenderId: "752675591657"
+    };
+    firebase.initializeApp(config);
+
+    // Message Ref
+    var messageRef = firebase.database().ref('/message/');
+
+    // Message Ref 에 이벤트 적용
+    // on으로 적용했듯이 off로 해제가능
+    // ex) messageRef.off();
+    messageRef.on('value', function () {
+        var chat = '';
+        messageRef.on('child_added', function (snapshot) {
+            // console.log(snapshot.val());
+            chat += "<div class='row message-bubble'><span>";
+            chat += snapshot.val();
+            chat += "</span></div>";
+        });
+        // console.log(chat);
+        $('.chat-panel').html(chat);
+        // 스크롤을 마지막으로 내려줌
+        $('.chat-panel').scrollTop($('.chat-panel')[0].scrollHeight);
+    });
+
+    // Send Button 에 클릭이벤트 적용
+    $('.sendBtn').on('click', function () {
+        // push() 로 넣을 경우 key 값을 임의로 생성해줌
+        messageRef.push().set($('.messageText').val());
+    });
+
+
+</script>
+
+</body>
+</html>
